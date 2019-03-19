@@ -15,7 +15,7 @@ app.use(function(req, res, next) {
 const databaseManager = new DatabaseManager();
 databaseManager.initialize();
 
-app.get("/jobs", cache(30), async (req, res) => {
+app.get("/jobs", cache(10*60), async (req, res) => {
   const data = await databaseManager.getJobs();
   res.json({
     'jobs': data

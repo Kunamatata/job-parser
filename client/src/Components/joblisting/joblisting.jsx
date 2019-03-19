@@ -33,9 +33,9 @@ class JobListing extends Component {
       let obj = JSON.parse(localStorage.getItem("jobs"));
       let timeLastFetchedJobs = JSON.parse(localStorage.getItem("timeLastFetchedJobs"));
 
-      // if the last api call was more than 15 minutes ago.
+      // if the last api call was more than 10 minutes ago.
       if (
-        (timeLastFetchedJobs + 15 * 60 * 1000) <
+        (timeLastFetchedJobs + 10*60*1000) <
         new Date().getTime()
       ) {
         console.log("Refresh local cache job posting");
