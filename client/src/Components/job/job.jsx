@@ -20,7 +20,7 @@ function job({ job, lowOpacity }) {
               );
             })
           : null}
-        <div className="time-posted">{moment(job.pubDate).fromNow()}</div>
+        <div className="time-posted">{moment(job.pubdate).fromNow()}</div>
       </div>
     </div>
   );

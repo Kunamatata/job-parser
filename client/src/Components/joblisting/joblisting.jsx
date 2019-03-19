@@ -22,17 +22,20 @@ class JobListing extends Component {
           let obj = { jobs: data.jobs };
           obj.jobs.sort((a, b) => {
             return (
-              new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()
+              new Date(b.pubdate).getTime() - new Date(a.pubdate).getTime()
             );
           });
           this.setState(obj);
           localStorage.setItem("jobs", JSON.stringify(obj));
+          localStorage.setItem('timeLastFetchedJobs', new Date().getTime())
         });
     } else {
       let obj = JSON.parse(localStorage.getItem("jobs"));
+      let timeLastFetchedJobs = JSON.parse(localStorage.getItem("timeLastFetchedJobs"));
+
       // if the last api call was more than 15 minutes ago.
       if (
-        new Date(obj.jobs[0].pubDate).getTime() + 15 * 60 * 1000 <
+        (timeLastFetchedJobs + 15 * 60 * 1000) <
         new Date().getTime()
       ) {
         console.log("Refresh local cache job posting");
@@ -53,7 +56,7 @@ class JobListing extends Component {
       const jobObj = {
         title: "Job Title",
         description: "Job Description",
-        pubDate: new Date(),
+        pubdate: new Date(),
         categories: ["React", "Node", "Jasmine", "Docker"]
       };
       return (
