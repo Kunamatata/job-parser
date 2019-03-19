@@ -1,36 +1,26 @@
 const express = require('express');
-const feedManager = require('./feedManager');
+const cache = require('./middleware/cache');
+const compression = require('compression')
 const DatabaseManager = require('./Database/DatabaseManager');
 
 const app = express();
-const databaseManager = new DatabaseManager();
-databaseManager.initialize();
 
-
+app.use(compression())
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
-app.get("/jobs", (req, res) => {
-  let jobs = [];
-  feedManager.mergeFeed().then(data => {
-    data.forEach(feed => {
-      feed.items.forEach(item => {
-        jobs.push(item);
-      })
-    })
-    let result = {
-      "jobs": jobs
-    };
-    res.json(result);
-  });
-})
+const databaseManager = new DatabaseManager();
+databaseManager.initialize();
 
-databaseManager.getJobs().then(data => {
-  // console.log(data)
-});
+app.get("/jobs", cache(30), async (req, res) => {
+  const data = await databaseManager.getJobs();
+  res.json({
+    'jobs': data
+  })
+})
 
 app.listen(3001);
 

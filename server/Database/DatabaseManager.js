@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Pool, Client } = require('pg');
 
 /**
@@ -5,7 +6,7 @@ const { Pool, Client } = require('pg');
  */
 class DatabaseManager {
   constructor() {
-    this.connectionString = 'postgresql://postgres:lericain@localhost:5432/JobBoard'
+    this.connectionString = process.env.PG_URL
     this.pool = null;
   }
 
@@ -16,13 +17,17 @@ class DatabaseManager {
   }
 
   async getJobs() {
-    const res = await this.pool.query('SELECT * from jobs');
+    const res = await this.pool.query(`SELECT id, title, (pubdate at time zone 'utc' AT TIME ZONE 'pst') as pubdate from jobs`);
     return res.rows;
   };
 
-  insertJob(job){
-      const query = `INSERT INTO jobs(pubDate, title) VALUES('${job.pubDate}', '${job.title}')`;
-      this.pool.query(query).then(res => console.log(res)).catch(e => console.log(e));
+  async insertJob(job){
+      const query = `INSERT INTO jobs(pubDate, title) VALUES($1, $2)`;
+      try{
+        await this.pool.query(query, [job.pubDate, job.title]);
+      }catch(e){
+        throw Error(e.message)
+      }
   }
 }
 
